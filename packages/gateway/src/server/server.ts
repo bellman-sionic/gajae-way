@@ -2162,16 +2162,11 @@ async function handleRequest(
 			const schedules = Object.fromEntries(
 				monitors.map((monitor) => [monitor.monitorId, scheduleProjection(monitor, now)] as const),
 			);
-			const invalid = runtime.registry.invalid();
-			const result: Record<string, unknown> = { monitors, schedules };
-			if (invalid.length > 0) {
-				result.invalid = invalid;
-			}
 			connection.write({
 				v: PROFILE_VERSION,
 				type: "response",
 				id: request.id,
-				result,
+				result: { monitors, schedules, invalid: runtime.registry.invalid() },
 			});
 			return;
 		}
